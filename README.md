@@ -1,18 +1,17 @@
-# Nand2Tetris
-Not
-And
-Or
-Xor
-Mux
-DMux
-Not16
-And16
-Or16
-Mux16
-Or8Way
-Mux4Way16
-Mux8Way16
-DMux4Way
-DMux8Way
-
-Have implemented the above gates in hdl.
+# Project 1
+The following chips were implemented in HDL:
+1. Not
+2. And
+3. Or
+4. Xor
+5. Mux
+6. DMux
+7. Not16
+8. And16
+9. Or16
+10. Mux16
+11. Or8Way
+12. Mux4Way16
+13. Mux8Way16
+14. DMux4Way
+15. DMux8Way
