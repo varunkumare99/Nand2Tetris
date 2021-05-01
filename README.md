@@ -54,3 +54,14 @@ The following chips were implemented in HDL:
 3. Computer
 
 
+## Project 6
+Assembler program that translates programs written in the symbolic Hack assembly language into binary code that can execute on the Hack hardware platform.
+
+#### Usage
+prompt> java -jar Assembler_project.jar Xxx.asm
+
+This command should create a new Xxx.hack file that can be executed as-is on
+the Hack computer.
+
+
+
