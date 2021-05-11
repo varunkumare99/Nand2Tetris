@@ -63,5 +63,28 @@ prompt> java -jar Assembler_project.jar Xxx.asm
 This command should create a new Xxx.hack file that can be executed as-is on
 the Hack computer.
 
+## Project 7
+VM translator- focusing on the implementation of the VM language's stack arithmetic and memory accesscommands. 
+
+####  Arithmetic Commands
+- add
+- sub
+- neg
+- eq
+- gt
+- lt
+- and
+- or
+- not
+
+#### Memory access Commands
+- pop segment i
+- push segment i
+
+#### Usage
+prompt> java -jar VMtranslator_project.jar Xxx.vm
+
+This command should create a new Xxx.asm file.
+
 
 
