@@ -87,4 +87,23 @@ prompt> java -jar VMtranslator_project.jar Xxx.vm
 This command should create a new Xxx.asm file.
 
 
+## Project 8
+VM translator- focusing on the implementation of the VM language's branching commands and function commands. 
+
+####  Branching Commands
+- label LABEL
+- goto LABEL
+- if-goto LABEL
+
+#### Function Commands
+- function FUNCTIONNAME nVars
+- call FUNCTIONNAME nArgs
+- return
+
+#### Usage
+prompt> java -jar VMtranslatorComplete_project.jar Xxx
+
+This command should create a new Xxx.asm file. Where XXX is a single vm file or a directory which contains multiple vm files.
+
+
 
