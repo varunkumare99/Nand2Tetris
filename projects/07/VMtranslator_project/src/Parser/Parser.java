@@ -13,16 +13,15 @@ public class Parser
     BufferedReader bufferedReader;
     String inputFileName;
     String currentCommand;
+    String nextCommand;
     String[] tokens;
-    CodeWriter codeWriter;
 
-    public Parser(String inputFileName, String outputFileName)
+    public Parser(String inputFileName)
     {
         try
         {
             this.inputFileName = inputFileName;
             bufferedReader = new BufferedReader(new FileReader(this.inputFileName));
-            codeWriter = new CodeWriter(outputFileName);
         } catch (FileNotFoundException e)
         {
             e.printStackTrace();
@@ -31,60 +30,32 @@ public class Parser
 
     public void advance()
     {
-        while (hasMoreCommands())
-        {
-            trimCommand();
-            if (checkForCommentsWhiteSpaces())
-            {
-                continue;
-            } else
-            {
-                removeTrailingComment();
-                trimCommand();
-                Integer commandType = commandType();
-                handleCommand(commandType);
-            }
-        }
-    }
-
-    private void handleCommand(Integer commandType)
-    {
-        String arg1;
-        String arg2;
+        currentCommand = nextCommand;
+        removeCommentSpaces();
         splitCommand();
-        codeWriter.writeString("//"+currentCommand+"\n");
-        switch (commandType)
-        {
-            case Constants.C_PUSH:
-            {
-                arg1 = arg1();
-                arg2 = arg2();
-                codeWriter.writePushPop(Constants.C_PUSH, arg1, Integer.parseInt(arg2));
-                break;
-            }
-            case Constants.C_POP:
-            {
-                arg1 = arg1();
-                arg2 = arg2();
-                codeWriter.writePushPop(Constants.C_POP, arg1, Integer.parseInt(arg2));
-                break;
-            }
-            case Constants.C_ARITHMETIC:
-            {
-                arg1 = arg1();
-                codeWriter.writeArithmetic(arg1);
-                break;
-            }
-        }
     }
 
-    private Boolean hasMoreCommands()
+    public String getCurrentCommand()
+    {
+        return currentCommand;
+    }
+
+    private void removeCommentSpaces()
+    {
+        trimCommand();
+        removeTrailingComment();
+        trimCommand();
+    }
+
+
+    public Boolean hasMoreCommands()
     {
         try
         {
-            if ((currentCommand = bufferedReader.readLine()) != null)
+            while ((nextCommand = bufferedReader.readLine()) != null)
             {
-                return true;
+                if (!checkForCommentsWhiteSpaces())
+                    return true;
             }
             return false;
         } catch (IOException e)
@@ -94,7 +65,7 @@ public class Parser
         return false;
     }
 
-    private Integer commandType()
+    public Integer commandType()
     {
         if (currentCommand.startsWith(Constants.STACK_PUSH))
             return Constants.C_PUSH;
@@ -108,7 +79,7 @@ public class Parser
             return -1;
     }
 
-    private String arg1()
+    public String arg1()
     {
         if (tokens.length == 1)
             return tokens[0];
@@ -116,7 +87,7 @@ public class Parser
             return tokens[1];
     }
 
-    private String arg2()
+    public String arg2()
     {
         return tokens[2];
     }
@@ -143,7 +114,7 @@ public class Parser
 
     private Boolean checkForCommentsWhiteSpaces()
     {
-        if (currentCommand.startsWith(Constants.Comment) || currentCommand.startsWith(Constants.WhiteSpace) || currentCommand.isEmpty())
+        if (nextCommand.startsWith(Constants.Comment) || nextCommand.startsWith(Constants.WhiteSpace) || nextCommand.isEmpty())
         {
             return true;
         }
@@ -169,7 +140,6 @@ public class Parser
         try
         {
             bufferedReader.close();
-            codeWriter.close();
         } catch (IOException e)
         {
             e.printStackTrace();

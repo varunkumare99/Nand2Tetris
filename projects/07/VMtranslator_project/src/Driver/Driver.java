@@ -1,5 +1,6 @@
 package Driver;
 
+import CodeWriter.CodeWriter;
 import Parser.Parser;
 
 public class Driver
@@ -14,14 +15,21 @@ public class Driver
 
         String inputFileName = args[0];
         StringBuilder outputFileName = getOutputFileName(inputFileName);
-        Parser parser = new Parser(inputFileName, outputFileName.toString());
-        vmTranslate(parser);
+        Parser parser = new Parser(inputFileName);
+        CodeWriter codeWriter = new CodeWriter(outputFileName.toString());
+        vmTranslate(parser,codeWriter);
     }
 
-    private static void vmTranslate(Parser parser)
+    private static void vmTranslate(Parser parser, CodeWriter codeWriter)
     {
-        parser.advance();
+        while (parser.hasMoreCommands())
+        {
+            parser.advance();
+            Integer commandType = parser.commandType();
+            handleCommand(parser, codeWriter, commandType);
+        }
         parser.close();
+        codeWriter.close();
     }
 
     private static StringBuilder getOutputFileName(String inputFileName)
@@ -31,5 +39,36 @@ public class Driver
         outputFileName = new StringBuilder(inputFileName.substring(0, dotPos + 1));
         outputFileName.append("asm");
         return outputFileName;
+    }
+
+    private static void handleCommand(Parser parser, CodeWriter codeWriter, Integer commandType)
+    {
+        String arg1;
+        String arg2;
+        codeWriter.writeString("//" + parser.getCurrentCommand() + "\n");
+        switch (commandType)
+        {
+            case Constants.C_PUSH:
+            {
+                arg1 = parser.arg1();
+                arg2 = parser.arg2();
+                codeWriter.writePushPop(Constants.C_PUSH, arg1, Integer.parseInt(arg2));
+                break;
+            }
+            case Constants.C_POP:
+            {
+                arg1 = parser.arg1();
+                arg2 = parser.arg2();
+                codeWriter.writePushPop(Constants.C_POP, arg1, Integer.parseInt(arg2));
+                break;
+            }
+            case Constants.C_ARITHMETIC:
+            {
+                arg1 = parser.arg1();
+                codeWriter.writeArithmetic(arg1);
+                break;
+            }
+
+        }
     }
 }
