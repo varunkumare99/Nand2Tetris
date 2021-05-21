@@ -1,0 +1,111 @@
+/** Implements a graphical square. */
+class Square {
+
+   field int x, y; // screen location of the square's top-left corner
+   field int squareSize; // length of this square, in pixels
+   field int squareType; // 1 - outline square , 2 - filled square 
+
+	 /** Constructs a new square with a given location and size and type */
+   constructor Square new(int Ax, int Ay, int Asize, int type) {
+		let x = Ax;
+		let y = Ay;
+		let squareSize = Asize;
+		let squareType = type;
+		do drawSquare();
+		return this;
+   }
+   
+   /** return X coordinate of square */
+   method int getXcoordinate(){
+		return x;
+   }
+   
+    /** return Ycoordinate of square */
+   method int getYcoordinate(){
+		return y;
+   }
+   
+   /** return square size */
+    method int getSquareSize(){
+		return squareSize;
+   }
+   
+    /** return square type */
+    method int getSquareType(){
+		return squareType;
+   }
+
+	 /** set X coordinate of square */
+   method void setXcoordinate(int xVal){
+		let x = xVal;
+		return;
+   }
+   
+     /** set Y coordinate of square */
+   method void setYcoordinate(int yVal){
+		let y = yVal;
+		return;
+   }
+
+	  /** Disposes this square. */
+  method void dispose() {
+      do Memory.deAlloc(this);
+      return;
+   }
+
+	/** Draws the square outline on screen. */
+   method void drawSquareOutLine() {
+      do Screen.setColor(true);
+	  do Screen.drawLine(x,y,x+squareSize,y);
+	  do Screen.drawLine(x,y,x,y+squareSize);
+	  do Screen.drawLine(x+squareSize,y+squareSize,x+squareSize,y);
+	  do Screen.drawLine(x+squareSize,y+squareSize,x,y+squareSize);
+      return;
+   }
+
+	/** Erases the square Outline from the screen.*/
+   method void eraseSquareOutLine() {
+      do Screen.setColor(false);
+      do Screen.drawLine(x,y,x+squareSize,y);
+	  do Screen.drawLine(x,y,x,y+squareSize);
+	  do Screen.drawLine(x+squareSize,y+squareSize,x+squareSize,y);
+	  do Screen.drawLine(x+squareSize,y+squareSize,x,y+squareSize);
+      return;
+   }
+   
+	/** Draws the square on screen. */
+      method void drawSquare() {
+		if(squareType = 1){
+			do drawSquareOutLine();
+		}
+		else{
+			do drawFilledSquare();
+		}
+      return;
+   }
+   
+	/** Erases the square from the screen. */
+	method void erase() {
+		if(squareType = 1){
+			do eraseSquareOutLine();
+		}
+		else{
+			do eraseFilledSquare();
+		}
+      return;
+	}
+
+	/** Draws the filled square on screen. */   
+      method void drawFilledSquare () {
+      do Screen.setColor(true);
+      do Screen.drawRectangle(x, y, x + squareSize, y + squareSize);
+      return;
+   }
+
+   /** Erases the filled square from the screen. */
+   method void eraseFilledSquare() {
+      do Screen.setColor(false);
+      do Screen.drawRectangle(x, y, x + squareSize, y + squareSize);
+      return;
+   }
+}

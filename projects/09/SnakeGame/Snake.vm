@@ -1,0 +1,773 @@
+function Snake.new 0
+push constant 2
+call Memory.alloc 1
+pop pointer 0
+push constant 0
+pop this 1
+call SnakeGame.getInitSnakePos 0
+call SnakeGame.getInitSnakePos 0
+call SnakeGame.getSize 0
+push constant 0
+call Square.new 4
+push constant 0
+call List.new 2
+pop this 0
+call SnakeGame.getInitSnakePos 0
+call SnakeGame.getInitSnakePos 0
+push constant 15
+add
+call SnakeGame.getSize 0
+push constant 0
+call Square.new 4
+push this 0
+call List.new 2
+pop this 0
+push pointer 0
+call Snake.drawSnake 1
+pop temp 0
+push pointer 0
+return
+function Snake.getSnake 0
+push argument 0
+pop pointer 0
+push this 0
+return
+function Snake.getDirection 0
+push argument 0
+pop pointer 0
+push this 1
+return
+function Snake.increaseSize 3
+push argument 0
+pop pointer 0
+push pointer 0
+call Snake.getSnakeHead 1
+pop local 0
+push local 0
+call Square.getXcoordinate 1
+pop local 1
+push local 0
+call Square.getYcoordinate 1
+pop local 2
+push this 1
+push constant 1
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push local 0
+call Square.getYcoordinate 1
+call SnakeGame.getSize 0
+sub
+pop local 2
+push local 1
+push local 2
+call SnakeGame.getSize 0
+push constant 0
+call Square.new 4
+push this 0
+call List.new 2
+pop this 0
+label IF_FALSE0
+push this 1
+push constant 2
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push local 0
+call Square.getYcoordinate 1
+call SnakeGame.getSize 0
+add
+pop local 2
+push local 1
+push local 2
+call SnakeGame.getSize 0
+push constant 0
+call Square.new 4
+push this 0
+call List.new 2
+pop this 0
+label IF_FALSE1
+push this 1
+push constant 3
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push local 0
+call Square.getXcoordinate 1
+call SnakeGame.getSize 0
+sub
+pop local 1
+push local 1
+push local 2
+call SnakeGame.getSize 0
+push constant 0
+call Square.new 4
+push this 0
+call List.new 2
+pop this 0
+label IF_FALSE2
+push this 1
+push constant 4
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push local 0
+call Square.getXcoordinate 1
+call SnakeGame.getSize 0
+add
+pop local 1
+push local 1
+push local 2
+call SnakeGame.getSize 0
+push constant 0
+call Square.new 4
+push this 0
+call List.new 2
+pop this 0
+label IF_FALSE3
+push pointer 0
+push local 0
+call Snake.drawSnakeSquare 2
+pop temp 0
+push constant 0
+return
+function Snake.isSnakeTouchingBoundary 3
+push argument 0
+pop pointer 0
+push argument 1
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+call Snake.getSnakeTail 1
+pop local 0
+goto IF_END0
+label IF_FALSE0
+push pointer 0
+call Snake.getSnakeHead 1
+pop local 0
+label IF_END0
+push local 0
+call Square.getXcoordinate 1
+pop local 1
+push local 0
+call Square.getYcoordinate 1
+pop local 2
+push pointer 0
+push local 1
+push local 2
+push argument 2
+call Snake.isCoordinatesOutScreen 4
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 0
+not
+return
+label IF_FALSE1
+push constant 0
+return
+function Snake.isCoordinatesOutScreen 0
+push argument 0
+pop pointer 0
+push argument 3
+push constant 1
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push argument 2
+call SnakeGame.getSize 0
+sub
+call SnakeGame.getSize 0
+lt
+push argument 1
+call SnakeGame.getSize 0
+add
+push constant 511
+call SnakeGame.getSize 0
+sub
+gt
+or
+push argument 1
+call SnakeGame.getSize 0
+lt
+or
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 0
+not
+return
+goto IF_END1
+label IF_FALSE1
+push constant 0
+return
+label IF_END1
+label IF_FALSE0
+push argument 3
+push constant 2
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push argument 2
+call SnakeGame.getSize 0
+add
+call SnakeGame.getSize 0
+add
+push constant 255
+call SnakeGame.getSize 0
+sub
+gt
+push argument 1
+call SnakeGame.getSize 0
+add
+push constant 511
+call SnakeGame.getSize 0
+sub
+gt
+or
+push argument 1
+call SnakeGame.getSize 0
+lt
+or
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push constant 0
+not
+return
+goto IF_END3
+label IF_FALSE3
+push constant 0
+return
+label IF_END3
+label IF_FALSE2
+push argument 3
+push constant 3
+eq
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push argument 1
+call SnakeGame.getSize 0
+sub
+call SnakeGame.getSize 0
+lt
+push argument 2
+call SnakeGame.getSize 0
+add
+push constant 255
+call SnakeGame.getSize 0
+sub
+gt
+or
+push argument 2
+call SnakeGame.getSize 0
+lt
+or
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push constant 0
+not
+return
+goto IF_END5
+label IF_FALSE5
+push constant 0
+return
+label IF_END5
+label IF_FALSE4
+push argument 3
+push constant 4
+eq
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push argument 1
+call SnakeGame.getSize 0
+add
+call SnakeGame.getSize 0
+add
+push constant 510
+call SnakeGame.getSize 0
+sub
+gt
+push argument 2
+call SnakeGame.getSize 0
+add
+push constant 255
+call SnakeGame.getSize 0
+sub
+gt
+or
+push argument 2
+call SnakeGame.getSize 0
+lt
+or
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
+push constant 0
+not
+return
+goto IF_END7
+label IF_FALSE7
+push constant 0
+return
+label IF_END7
+label IF_FALSE6
+push constant 0
+return
+function Snake.moveSnakeUp 6
+push argument 0
+pop pointer 0
+push this 1
+push constant 2
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push this 0
+call Snake.reverseList 2
+pop this 0
+label IF_FALSE0
+push pointer 0
+call Snake.getSnakeHead 1
+pop local 3
+push local 3
+call Square.getXcoordinate 1
+pop local 1
+push local 3
+call Square.getYcoordinate 1
+call SnakeGame.getSize 0
+sub
+pop local 2
+push pointer 0
+call Snake.getSnakeTail 1
+pop local 5
+push pointer 0
+call Snake.getNminusOneElements 1
+pop local 0
+push local 1
+push local 2
+call SnakeGame.getSize 0
+push constant 0
+call Square.new 4
+push local 0
+call List.new 2
+pop local 0
+push constant 1
+pop this 1
+push pointer 0
+push local 0
+call Snake.setSquares 2
+pop temp 0
+push pointer 0
+call Snake.getSnakeHead 1
+pop local 4
+push pointer 0
+push local 5
+call Snake.eraseSnakeSquare 2
+pop temp 0
+push local 5
+call Square.dispose 1
+pop temp 0
+push pointer 0
+push local 4
+call Snake.drawSnakeSquare 2
+pop temp 0
+push constant 0
+return
+function Snake.moveSnakeDown 6
+push argument 0
+pop pointer 0
+push this 1
+push constant 1
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push this 0
+call Snake.reverseList 2
+pop this 0
+label IF_FALSE0
+push pointer 0
+call Snake.getSnakeHead 1
+pop local 3
+push local 3
+call Square.getXcoordinate 1
+pop local 1
+push local 3
+call Square.getYcoordinate 1
+call SnakeGame.getSize 0
+add
+pop local 2
+push pointer 0
+call Snake.getSnakeTail 1
+pop local 5
+push pointer 0
+call Snake.getNminusOneElements 1
+pop local 0
+push local 1
+push local 2
+call SnakeGame.getSize 0
+push constant 0
+call Square.new 4
+push local 0
+call List.new 2
+pop local 0
+push constant 2
+pop this 1
+push pointer 0
+push local 0
+call Snake.setSquares 2
+pop temp 0
+push pointer 0
+call Snake.getSnakeHead 1
+pop local 4
+push pointer 0
+push local 5
+call Snake.eraseSnakeSquare 2
+pop temp 0
+push local 5
+call Square.dispose 1
+pop temp 0
+push pointer 0
+push local 4
+call Snake.drawSnakeSquare 2
+pop temp 0
+push constant 0
+return
+function Snake.moveSnakeLeft 6
+push argument 0
+pop pointer 0
+push this 1
+push constant 4
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push this 0
+call Snake.reverseList 2
+pop this 0
+label IF_FALSE0
+push pointer 0
+call Snake.getSnakeHead 1
+pop local 3
+push local 3
+call Square.getXcoordinate 1
+call SnakeGame.getSize 0
+sub
+pop local 1
+push local 3
+call Square.getYcoordinate 1
+pop local 2
+push pointer 0
+call Snake.getSnakeTail 1
+pop local 5
+push pointer 0
+call Snake.getNminusOneElements 1
+pop local 0
+push local 1
+push local 2
+call SnakeGame.getSize 0
+push constant 0
+call Square.new 4
+push local 0
+call List.new 2
+pop local 0
+push constant 3
+pop this 1
+push pointer 0
+push local 0
+call Snake.setSquares 2
+pop temp 0
+push pointer 0
+call Snake.getSnakeHead 1
+pop local 4
+push pointer 0
+push local 5
+call Snake.eraseSnakeSquare 2
+pop temp 0
+push local 5
+call Square.dispose 1
+pop temp 0
+push pointer 0
+push local 4
+call Snake.drawSnakeSquare 2
+pop temp 0
+push constant 0
+return
+function Snake.moveSnakeRight 6
+push argument 0
+pop pointer 0
+push this 1
+push constant 3
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push this 0
+call Snake.reverseList 2
+pop this 0
+label IF_FALSE0
+push pointer 0
+call Snake.getSnakeHead 1
+pop local 3
+push local 3
+call Square.getXcoordinate 1
+call SnakeGame.getSize 0
+add
+pop local 1
+push local 3
+call Square.getYcoordinate 1
+pop local 2
+push pointer 0
+call Snake.getSnakeTail 1
+pop local 5
+push pointer 0
+call Snake.getNminusOneElements 1
+pop local 0
+push local 1
+push local 2
+call SnakeGame.getSize 0
+push constant 0
+call Square.new 4
+push local 0
+call List.new 2
+pop local 0
+push constant 4
+pop this 1
+push pointer 0
+push local 0
+call Snake.setSquares 2
+pop temp 0
+push pointer 0
+call Snake.getSnakeHead 1
+pop local 4
+push pointer 0
+push local 5
+call Snake.eraseSnakeSquare 2
+pop temp 0
+push local 5
+call Square.dispose 1
+pop temp 0
+push pointer 0
+push local 4
+call Snake.drawSnakeSquare 2
+pop temp 0
+push constant 0
+return
+function Snake.getNminusOneElements 6
+push argument 0
+pop pointer 0
+push constant 0
+pop local 2
+push this 0
+pop local 0
+push this 0
+pop local 1
+push local 1
+call List.getNext 1
+pop local 1
+label WHILE_EXP0
+push local 1
+push constant 0
+eq
+not
+not
+if-goto WHILE_END0
+push local 0
+call List.getData 1
+pop local 5
+push local 5
+call Square.getXcoordinate 1
+pop local 3
+push local 5
+call Square.getYcoordinate 1
+pop local 4
+push local 3
+push local 4
+call SnakeGame.getSize 0
+push constant 0
+call Square.new 4
+push local 2
+call List.new 2
+pop local 2
+push local 0
+call List.getNext 1
+pop local 0
+push local 1
+call List.getNext 1
+pop local 1
+goto WHILE_EXP0
+label WHILE_END0
+push pointer 0
+push local 2
+call Snake.reverseList 2
+pop local 2
+push local 2
+return
+function Snake.reverseList 5
+push argument 0
+pop pointer 0
+push argument 1
+pop local 0
+push local 0
+pop local 1
+push constant 0
+pop argument 1
+label WHILE_EXP0
+push local 0
+push constant 0
+eq
+not
+not
+if-goto WHILE_END0
+push local 0
+call List.getData 1
+pop local 2
+push local 2
+call Square.getXcoordinate 1
+pop local 3
+push local 2
+call Square.getYcoordinate 1
+pop local 4
+push local 3
+push local 4
+call SnakeGame.getSize 0
+push constant 0
+call Square.new 4
+push argument 1
+call List.new 2
+pop argument 1
+push local 0
+call List.getNext 1
+pop local 0
+goto WHILE_EXP0
+label WHILE_END0
+push local 1
+call List.dispose 1
+pop temp 0
+push argument 1
+return
+function Snake.setSquares 0
+push argument 0
+pop pointer 0
+push pointer 0
+call Snake.dispose 1
+pop temp 0
+push argument 1
+pop this 0
+push constant 0
+return
+function Snake.getSnakeTail 3
+push argument 0
+pop pointer 0
+push this 0
+pop local 0
+push this 0
+pop local 1
+push local 1
+call List.getNext 1
+pop local 1
+label WHILE_EXP0
+push local 1
+push constant 0
+eq
+not
+not
+if-goto WHILE_END0
+push local 0
+call List.getNext 1
+pop local 0
+push local 1
+call List.getNext 1
+pop local 1
+push local 0
+call List.getData 1
+pop local 2
+goto WHILE_EXP0
+label WHILE_END0
+push local 2
+return
+function Snake.getSnakeHead 2
+push argument 0
+pop pointer 0
+push this 0
+pop local 0
+push local 0
+push constant 0
+eq
+not
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push local 0
+call List.getData 1
+pop local 1
+push local 1
+call Square.drawSquare 1
+pop temp 0
+label IF_FALSE0
+push local 1
+return
+function Snake.drawSnake 2
+push argument 0
+pop pointer 0
+push this 0
+pop local 0
+label WHILE_EXP0
+push local 0
+push constant 0
+eq
+not
+not
+if-goto WHILE_END0
+push local 0
+call List.getData 1
+pop local 1
+push local 1
+call Square.drawSquare 1
+pop temp 0
+push local 0
+call List.getNext 1
+pop local 0
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function Snake.drawSnakeSquare 0
+push argument 0
+pop pointer 0
+push argument 1
+call Square.drawFilledSquare 1
+pop temp 0
+push constant 0
+return
+function Snake.eraseSnakeSquare 0
+push argument 0
+pop pointer 0
+push argument 1
+call Square.eraseFilledSquare 1
+pop temp 0
+push constant 0
+return
+function Snake.dispose 0
+push argument 0
+pop pointer 0
+push this 0
+call List.dispose 1
+pop temp 0
+push constant 0
+return

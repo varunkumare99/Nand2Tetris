@@ -1,0 +1,349 @@
+   /** Implements a Snake*/
+   class Snake{
+		field List squares; // snake represented as a list of squares
+		field int direction; //	1-up, 2-down, 3-left, 4-right
+		
+		/** Constructs a new Snake of two squares */
+		constructor Snake new() {
+			let direction = 0;
+			let squares = List.new(Square.new(SnakeGame.getInitSnakePos(),SnakeGame.getInitSnakePos(),SnakeGame.getSize(),0),null);
+			let squares = List.new(Square.new(SnakeGame.getInitSnakePos(),SnakeGame.getInitSnakePos()+15,SnakeGame.getSize(),0),squares);
+			do drawSnake();
+			return this;
+		}
+		
+		/** returns the list of squares*/
+		method List getSnake(){
+			return squares;
+		}
+		
+		/** returns the direction of snake*/
+		method int getDirection(){
+			return direction;
+		}
+		
+		/** increases the snake by one square*/
+		method void increaseSize() {
+			var Square tempSquare;
+			var int xCor, yCor;
+			let tempSquare = getSnakeHead();
+			let xCor = tempSquare.getXcoordinate();
+			let yCor = tempSquare.getYcoordinate();
+			
+		    if (direction = 1) { // 1 - up 
+				let yCor = tempSquare.getYcoordinate() - SnakeGame.getSize();
+				let squares = List.new(Square.new(xCor,yCor,SnakeGame.getSize(),0),squares);
+				
+			}
+			
+			if (direction = 2) { // 2 down
+				let yCor = tempSquare.getYcoordinate() + SnakeGame.getSize();
+				let squares = List.new(Square.new(xCor,yCor,SnakeGame.getSize(),0),squares);
+			}
+			
+			if (direction = 3) { // 3 left
+			    let xCor = tempSquare.getXcoordinate() - SnakeGame.getSize();
+				let squares = List.new(Square.new(xCor,yCor,SnakeGame.getSize(),0),squares);
+			}
+			
+			if (direction = 4) { // 4 right
+				let xCor = tempSquare.getXcoordinate() + SnakeGame.getSize();
+				let squares = List.new(Square.new(xCor,yCor,SnakeGame.getSize(),0),squares);
+			}
+			
+			do drawSnakeSquare(tempSquare);
+			return;
+		}
+	
+		/** check if snake is touching any of the boundaries*/
+		method Boolean isSnakeTouchingBoundary( boolean isReverse, int screenSide){
+			var Square head;
+			var int xCor, yCor;
+			if (isReverse){
+				let head = getSnakeTail();
+			}
+			else {
+				let head = getSnakeHead();
+			}
+			
+			let xCor = head.getXcoordinate();
+			let yCor = head.getYcoordinate();
+			
+			if (isCoordinatesOutScreen(xCor,yCor,screenSide)) { 
+				  return true;
+			}
+			return false;
+		}
+		
+		/** check if the snake coordiantes are out of screen*/
+		method boolean isCoordinatesOutScreen( int xCor, int yCor, int screenSide){
+			if (screenSide = 1){
+				if ( ((yCor - SnakeGame.getSize())  < (SnakeGame.getSize())) |
+                     ((xCor + SnakeGame.getSize())  > (511 - SnakeGame.getSize())) |
+					 (xCor  < SnakeGame.getSize())) {
+					return true;
+				}
+				else	{
+				return false;
+				}
+			}
+			
+			if (screenSide = 2){
+				if ( (yCor + SnakeGame.getSize() + SnakeGame.getSize())  > (255 - SnakeGame.getSize()) |
+					((xCor + SnakeGame.getSize())  > (511 - SnakeGame.getSize())) |
+					 (xCor  < SnakeGame.getSize())) {
+					return true;
+				}
+				else	{
+				return false;
+				}
+			}
+			
+			if (screenSide = 3){
+				if ( ((xCor - SnakeGame.getSize())  < (SnakeGame.getSize())) |  
+					((yCor + SnakeGame.getSize())  > (255 - SnakeGame.getSize())) |
+					 (yCor  < SnakeGame.getSize())) {
+					return true;
+				}
+				else	{
+				return false;
+				}
+			}
+			
+			if (screenSide = 4){
+				if ( ((xCor + SnakeGame.getSize() + SnakeGame.getSize())  > (510-SnakeGame.getSize())) |
+					((yCor + SnakeGame.getSize())  > (255 - SnakeGame.getSize())) |
+					 (yCor  < SnakeGame.getSize())) {
+					return true;
+				}
+				else	{
+				return false;
+				}
+			}
+			
+			return false;
+		}
+   
+		/** move snake up by one square*/
+		method void moveSnakeUp(){ // 1- up
+			var List tempList;
+			var int firstXcor, firstYcor;
+			var Square tempSquare,head, tail;
+			
+			if (direction = 2) {
+				let squares = reverseList(squares);
+			}
+						
+			let tempSquare = getSnakeHead();
+			let firstXcor = tempSquare.getXcoordinate();
+			let firstYcor = tempSquare.getYcoordinate() - SnakeGame.getSize();
+			
+			let tail = getSnakeTail();
+			let tempList = getNminusOneElements();
+			let tempList = List.new(Square.new(firstXcor,firstYcor,SnakeGame.getSize(),0),tempList);
+			let direction = 1;
+			
+			do setSquares(tempList);
+			let head = getSnakeHead();
+			do eraseSnakeSquare(tail);
+			do tail.dispose();
+			do drawSnakeSquare(head);
+			return;
+		}
+		
+		/** move snake down by one square*/
+		method void moveSnakeDown(){ //2- down
+			var List tempList;
+			var int firstXcor, firstYcor;
+			var Square tempSquare,head, tail;
+				
+			if (direction = 1) {
+				let squares = reverseList(squares);
+			}
+			
+			let tempSquare = getSnakeHead();
+			let firstXcor = tempSquare.getXcoordinate();
+			let firstYcor = tempSquare.getYcoordinate() + SnakeGame.getSize();
+			
+			let tail = getSnakeTail();
+			
+			let tempList = getNminusOneElements();
+			let tempList = List.new(Square.new(firstXcor,firstYcor,SnakeGame.getSize(),0),tempList);
+			let direction = 2;
+			
+			do setSquares(tempList);
+			let head = getSnakeHead();
+			do eraseSnakeSquare(tail);
+			do tail.dispose();
+			do drawSnakeSquare(head);
+			return;
+		}
+		
+		/** move snake left by one square*/
+		method void moveSnakeLeft(){ //3-left
+			var List tempList;
+			var int firstXcor, firstYcor;
+			var Square tempSquare,head, tail;
+			
+			if (direction = 4) {
+				let squares = reverseList(squares);
+			}
+			
+			let tempSquare = getSnakeHead();
+			let firstXcor = tempSquare.getXcoordinate() - SnakeGame.getSize();
+			let firstYcor = tempSquare.getYcoordinate();
+			
+			let tail = getSnakeTail();
+			let tempList = getNminusOneElements();
+			let tempList = List.new(Square.new(firstXcor,firstYcor,SnakeGame.getSize(),0),tempList);
+			let direction = 3;
+			
+			do setSquares(tempList);
+			let head = getSnakeHead();
+			do eraseSnakeSquare(tail);
+			do tail.dispose();
+			do drawSnakeSquare(head);
+			
+			return;
+		}
+		
+		/** move snake right by one square*/
+		method void moveSnakeRight(){ //4-right
+			var List tempList;
+			var int firstXcor, firstYcor;
+			var Square tempSquare,head, tail;
+				
+			if (direction = 3) {
+				let squares = reverseList(squares);
+			}
+
+			let tempSquare = getSnakeHead();
+			let firstXcor = tempSquare.getXcoordinate() + SnakeGame.getSize();
+			let firstYcor = tempSquare.getYcoordinate();
+			
+			let tail = getSnakeTail();
+			let tempList = getNminusOneElements();
+			let tempList = List.new(Square.new(firstXcor,firstYcor,SnakeGame.getSize(),0),tempList);
+			let direction = 4;
+			
+			do setSquares(tempList);
+			let head = getSnakeHead();
+			do eraseSnakeSquare(tail);
+			do tail.dispose();
+			do drawSnakeSquare(head);
+			
+			return;
+		}
+		
+		/** get N-1 minus elements of the snake*/		
+		method List getNminusOneElements(){
+			var List currentOne,currentTwo, tempList;
+			var int firstXcor, firstYcor;
+			var Square tempSquare;
+			
+			let tempList = null;
+			let currentOne = squares;
+			let currentTwo = squares;
+			let currentTwo = currentTwo.getNext();
+			
+			while (~(currentTwo= null)) {
+				let tempSquare = currentOne.getData();
+				let firstXcor = tempSquare.getXcoordinate();
+				let firstYcor = tempSquare.getYcoordinate();
+				let tempList = List.new(Square.new(firstXcor,firstYcor,SnakeGame.getSize(),0),tempList);
+				let currentOne = currentOne.getNext();
+				let currentTwo = currentTwo.getNext();
+			}
+			let tempList = reverseList(tempList);
+			return tempList;
+		}
+		
+		/** reverse a list of squares*/
+		method List reverseList(List tempList){
+			var List current,deleteList;
+			var Square tempSquare;
+			var int firstXcor, firstYcor;
+			let current = tempList;
+			let deleteList = current;
+			let tempList = null;
+			
+			while (~(current= null)) {
+				let tempSquare = current.getData();
+				let firstXcor = tempSquare.getXcoordinate();
+				let firstYcor = tempSquare.getYcoordinate();
+				let tempList = List.new(Square.new(firstXcor,firstYcor,SnakeGame.getSize(),0),tempList);
+				let current = current.getNext();
+			}
+			do deleteList.dispose();
+			return tempList;
+		}
+		
+		/** set the list of squares that represents the snake*/
+		method void setSquares(List tempList){
+				do dispose();
+				let squares = tempList;
+				return;
+		}
+		
+		/** return the tail square of snake*/
+		method Square getSnakeTail(){
+			var List currentOne, currentTwo;
+			var Square tempSquare; 
+			
+			let currentOne = squares;
+			let currentTwo = squares;
+			let currentTwo = currentTwo.getNext();
+			
+			while (~(currentTwo = null)){
+				let currentOne = currentOne.getNext();
+				let currentTwo = currentTwo.getNext();
+				let tempSquare = currentOne.getData();
+			}
+			return tempSquare;
+		}
+	
+		/** return the head square of snake*/
+		method Square getSnakeHead(){
+			var List current;
+			var Square square;
+			let current = squares;
+			
+			if (~(current=null)){
+				let square = current.getData();
+				do square.drawSquare();
+			}
+			return square;
+		}
+		
+		/** draw the whole snake on screen*/
+		method void drawSnake(){
+			var List current;
+			var Square square;
+			let current = squares;
+			
+			while(~(current=null)){
+				let square = current.getData();
+				do square.drawSquare();
+				let current = current.getNext();
+			}
+			return;
+		}
+		
+		/** draw a square of the snake on screen*/
+		method void drawSnakeSquare(Square sq){
+			do sq.drawFilledSquare();
+			return;
+		}
+		
+		/** erase a square of the snake on screen*/
+		method void eraseSnakeSquare(Square sq){
+			do sq.eraseFilledSquare();
+			return;
+		}
+		
+		   /** Disposes this snake object */
+		method void dispose() {
+			do squares.dispose();
+			return;
+		}
+}

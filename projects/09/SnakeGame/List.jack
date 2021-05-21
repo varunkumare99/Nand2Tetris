@@ -1,0 +1,33 @@
+/** Represents a linked list of squares. */
+class List {
+    field Square data;     // a list consists of a square
+    field List next;         // followed by a list of squares
+
+    /* Creates a List. */
+    constructor List new(Square car, List cdr) {
+        let data = car;       // the identifiers car and cdr are used in 
+        let next = cdr;       // memory of the Lisp programming language
+        return this;
+    }
+
+    /** Accessors. */
+    method Square getData() { return data; }
+    method Square getNext() { return next; }
+	
+    /** Disposes this List by recursively disposing its tail. */
+    method void dispose() {
+		var List current;    // initializes current to the first item
+		var Square square;
+        let current = this;  // of this list
+        
+		if (~(next = null)) {
+            do next.dispose();
+        }
+        // Uses an OS routine to recycle this object.
+		let square = current.getData();
+		do square.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+}

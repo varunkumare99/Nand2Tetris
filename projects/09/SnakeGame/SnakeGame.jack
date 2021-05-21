@@ -1,0 +1,182 @@
+/** Implements a Snake Game. */
+class SnakeGame{
+	static int size; // size of square used for food, snake
+	static int screenWidth; // screenWidth = 512
+	static int screenHeight; // screenHeight = 256
+	static int cursorIthpos; // cursorIthpos = 11
+	static int cursorJthpos; // cursorIthpos = 22
+	static int initSnakePos; // initSnakePos = 100
+	static int score; // stores the number for food items
+	
+	field Snake snake; // snake object
+	field Square food; // current food on screen
+	field int direction; // direction of snake
+	
+	/** Constructs a new SnakeGame. */
+	constructor SnakeGame new(){
+		let initSnakePos = 100;
+		let cursorIthpos = 11;
+		let cursorJthpos = 22;
+		let score = 0;
+		let size = 15;
+		let screenWidth = 512;
+		let screenHeight = 256;
+		let food = Square.new(50,50,size,1);
+		do food.drawSquareOutLine();
+		let snake = Snake.new();
+		let direction = 0;
+		do drawBoundary();
+		return this;
+	}
+	
+	/** create new food*/
+	method void createNewFood(){
+	    var int xCoordinate, yCoordinate;
+		let score = score + 1;
+		let xCoordinate = Random.randRange(size+2, screenWidth-size-size);
+		let yCoordinate = Random.randRange(size+2, screenHeight - size-size);
+		let food = Square.new(xCoordinate,yCoordinate,size,1);
+		do food.drawSquareOutLine();
+		return;
+	}
+	
+	/** erase food from the screen*/
+	method void removeFood(){
+		do food.eraseSquareOutLine();
+		return;
+	}
+	
+	/** increase Snake size by one square*/
+	method void increaseSnake(){
+		do snake.increaseSize();
+		return;
+	}
+	
+	/** get square side */
+	function int getSize(){
+		return size;
+	}
+	
+	/** get initSnakePos */
+	function int getInitSnakePos(){
+		return initSnakePos;
+	}
+	
+	/** Move the snake in direction of arrows pressed */
+	method void moveSnake() {
+		if (direction = 1)	{ 
+			do snake.moveSnakeUp(); 
+		}
+		if (direction = 2) { 
+			do snake.moveSnakeDown(); 
+		}
+		if (direction = 3) { 
+			do snake.moveSnakeLeft(); 
+		}
+		if (direction = 4) { 
+			do snake.moveSnakeRight(); 
+		}
+		do Sys.wait(100);  // delays the next movement
+		return;
+	}
+	
+	/**  check if snake touches food */
+	method boolean isSnakeTouchFound(){
+		var Square head;
+		let head = snake.getSnakeHead();
+		if ( (Math.abs(head.getXcoordinate() - food.getXcoordinate()) < size) &  
+			(Math.abs(head.getYcoordinate() - food.getYcoordinate()) < size) ){
+				return true;
+			}
+		return false;
+	}
+	
+  /** Runs the game: handles the user's inputs and moves the snake accordingly */
+	 method void run() {
+	  var char key;  //the key currently pressed by the user
+      var boolean reverse;
+	  let reverse = false;
+	  
+      while (true) {
+         // waits for a key to be pressed
+         while (key = 0) {
+            let key = Keyboard.keyPressed();
+			if (snake.isSnakeTouchingBoundary(reverse, direction)){
+				do Sys.wait(500);
+				do gameOver();
+				return;
+			}
+			
+            do moveSnake();
+			
+			if (isSnakeTouchFound()) {
+				do removeFood();
+				do createNewFood();
+				do increaseSnake();
+			}	
+         }
+
+         if (key = 131) { let direction = 1; }   // up arrow
+         if (key = 133) { let direction = 2; }   // down arrow
+         if (key = 130) { let direction = 3; }   // left arrow
+         if (key = 132) { let direction = 4; }   // right arrow
+		 
+		 if ( ((direction = 1) & ( snake.getDirection() = 2)) |
+		     ((direction = 2) & ( snake.getDirection() = 1)) |
+			 ((direction = 4) & ( snake.getDirection() = 3)) |
+			 ((direction = 3) & ( snake.getDirection() =4)) ) {
+					let reverse = true;
+			 }
+		else{
+			let reverse = false;
+		}
+
+         // waits for the key to be released
+         while (~(key = 0)) {
+            let key = Keyboard.keyPressed();
+			if (snake.isSnakeTouchingBoundary(reverse,direction)){
+				do Sys.wait(500);
+				do gameOver();
+				return;
+			}
+			
+            do moveSnake();
+			
+			if (isSnakeTouchFound()) {
+				do removeFood();
+				do createNewFood();
+				do increaseSnake();
+			}	
+		}
+     } 	
+     return;
+   }
+   
+   /** Display game end score */
+   method void gameOver(){
+    do Screen.clearScreen();
+    do Output.moveCursor(cursorIthpos, cursorJthpos);
+	do Output.printString("Game Over ! ");
+	do Output.printString("Score : ");
+	do Output.printInt(score);
+	return;
+   }
+   
+   /** Disposes this snakeGame object */
+	method void dispose() {
+      do snake.dispose();
+	  do food.dispose();
+      do Memory.deAlloc(this);
+      return;
+   }
+   
+   /** Draw game boundary */
+   method void drawBoundary(){
+		do Screen.setColor(true);
+		do Screen.drawRectangle(0,0,size,255); // left
+		do Screen.drawRectangle(size,0,511,size); // top
+		do Screen.drawRectangle(size,255-size,511,255); //bottom
+		do Screen.drawRectangle(511-size,size,511,255-size); //right
+		return;
+   }
+}
