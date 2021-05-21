@@ -105,5 +105,11 @@ prompt> java -jar VMtranslatorComplete_project.jar Xxx
 
 This command should create a new Xxx.asm file. Where XXX is a single vm file or a directory which contains multiple vm files.
 
+## Project 9
+Snake Game implemented in Jack Language.
+Run it in VM emulator.
+![Snake Game](https://github.com/varunkumare99/Nand2Tetris/blob/main/projects/09/SnakeGame/image1Score.png)
+![Game Score](https://github.com/varunkumare99/Nand2Tetris/blob/main/projects/09/SnakeGame/image2Game.png)
+
 
 
