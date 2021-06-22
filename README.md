@@ -111,5 +111,21 @@ Run it in VM emulator.
 ![Snake Game](https://github.com/varunkumare99/Nand2Tetris/blob/main/projects/09/SnakeGame/image1Score.png)
 ![Game Score](https://github.com/varunkumare99/Nand2Tetris/blob/main/projects/09/SnakeGame/image2Game.png)
 
+## Project 10
+Compiler I : Syntax Analysis
+a syntax analyzer that parses Jack programs according to the Jack grammar, producing an XML file that renders the program's structure using marked-up text. 
+
+####  Tokenizer
+Tokenizing, a basic service of any syntax analyzer, is the act of breaking a given textual input into a stream of tokens.
+
+#### Parser(Compilation Engine)
+parsing is defined narrowly as the act of going over the tokenized input and rendering its grammatical structure using some agreed-upon format. 
+The specific parser that we implement here is based on the Jack grammar, and is designed to emit XML output.
+
+#### Usage
+prompt> java -jar Complier_1.jar Xxx
+
+For every jack file present the in directory (Xxx) it generates a corresponding XML file.
+
 
 
