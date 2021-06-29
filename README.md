@@ -113,7 +113,7 @@ Run it in VM emulator.
 
 ## Project 10
 Compiler I : Syntax Analysis
-a syntax analyzer that parses Jack programs according to the Jack grammar, producing an XML file that renders the program's structure using marked-up text. 
+A syntax analyzer that parses Jack programs according to the Jack grammar, producing an XML file that renders the program's structure using marked-up text. 
 
 ####  Tokenizer
 Tokenizing, a basic service of any syntax analyzer, is the act of breaking a given textual input into a stream of tokens.
@@ -126,6 +126,26 @@ The specific parser that we implement here is based on the Jack grammar, and is 
 prompt> java -jar Complier_1.jar Xxx
 
 For every jack file present the in directory (Xxx) it generates a corresponding XML file.
+
+
+## Project 11
+Compiler II : code generation.
+The implementation is based on morphing the syntax analyzer built in the previous project(10) into a full-scale compiler.
+
+#### Symbol Table
+The syntax analyzer outputs the following information as part of its XML output using the symbol table:
+  - The identifier's name, as done by the current version of the syntax analyzer.
+  - The identifier's category: var, argument, static, field, class, or subroutine.
+  - If the identifier's category is var, argument, static, or field, the running index assigned to the identifier by the symbol table.
+  - Whether the identifier is presently being defined (e.g. the identifier stands for a variable declared in a "var" statement) or used.
+
+#### Code Generation 
+It mainly involves morphing the xml output to vm commands.
+
+#### Usage
+prompt> java -jar Compiler_2-1.0.0-jar-with-dependencies.jar Xxx
+
+For every jack file present the in directory (Xxx) it generates a corresponding vm file. (provide the complete path of Xxx)
 
 
 
