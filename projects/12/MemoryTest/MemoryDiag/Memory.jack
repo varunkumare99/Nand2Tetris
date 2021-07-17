@@ -1,0 +1,138 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Memory.jack
+
+/**
+ * This library provides two services: direct access to the computer's main
+ * memory (RAM), and allocation and recycling of memory blocks. The Hack RAM
+ * consists of 32,768 words, each holding a 16-bit binary number.
+ */ 
+class Memory {
+
+    static Array ram;
+    static Array heap;
+    static int freeListHead;
+    static int freeListTail;
+
+    /** Initializes the class. */
+    function void init() {
+    	let ram = 0;
+    	let heap = 2048; //heapBase
+    	let freeListHead = heap;
+    	let freeListTail = heap;
+    	let heap[0] = 0; //next
+    	let heap[1] = 14334; //length
+    	return;
+    }
+
+    /** Returns the RAM value at the given address. */
+    function int peek(int address) {
+    	return ram[address];
+    }
+
+    /** Sets the RAM value at the given address to the given value. */
+    function void poke(int address, int value) {
+    	let ram[address] = value;
+    	return;
+    }
+
+    /** Finds an available RAM block of the given size and returns
+     *  a reference to its base address. */
+    function int alloc(int size) {
+    	var int currPtr,currPtrNext, currPtrLength,newBlockAddress,prevPtr;
+    	
+    	if(size < 0)
+    	{
+    		do Sys.error(5);
+    	}
+    	let prevPtr = 0;
+    	let currPtr = freeListHead;
+    	let currPtrNext = currPtr[0];
+    	let currPtrLength = currPtr[1];
+    	
+    	while( (currPtrLength < size) & (~(currPtr = 0)))
+    	{
+    		let prevPtr = currPtr;
+    		let currPtr = currPtrNext;
+    		let currPtrNext = currPtr[0];
+    		let currPtrLength = currPtr[1];
+    	}
+    	
+    	if(currPtr = 0)
+    	{
+    		do Sys.error(6); //no segment -> heap overflow
+    	}
+    	
+    	if (currPtrLength = size)
+    	{
+    		let prevPtr[0] = currPtr[0]; //point to the next segment
+    		let currPtr[0] = 0; //current segment points to null	
+    		let newBlockAddress = currPtr;
+    		
+    		if(currPtrNext = 0) //lastSegment
+    		{
+    			let freeListTail = prevPtr;
+    		}
+    	}
+    	else
+    	{
+    		let currPtr[1] = currPtrLength - (size + 2);
+    		let newBlockAddress = currPtr + currPtr[1] + 2; //address of new segment
+    		let newBlockAddress[0] = 0; //point to null
+    		let newBlockAddress[1] = size; //size of new block
+    	}
+    	return newBlockAddress+2;
+    }
+
+    /** De-allocates the given object (cast as an array) by making
+     *  it available for future allocations. */
+    function void deAlloc(Array o) {
+    	let freeListTail[0] = o-2;
+    	let freeListTail = o-2;
+    	do Memory.deFragmentMemory();
+    	return;
+    }
+    
+    /** de-fregments the heap memory in to a contiguous block */
+    function void deFragmentMemory(){
+    	var int currPtr,nextPtr,nextMergePtr,i,prevPtr;
+    	let currPtr = freeListHead;
+
+    	while(~(currPtr = 0))
+    	{
+    		let nextMergePtr = currPtr + currPtr[1] + 2;
+    		let nextPtr = currPtr[0];
+    		let prevPtr = currPtr;
+    		while((~(nextPtr = 0)) & (~(nextPtr = nextMergePtr)) )
+    		{
+    			let prevPtr = nextPtr;
+    			let nextPtr = nextPtr[0];
+    		}
+    		
+    		if(nextPtr = nextMergePtr) //merge found
+    		{
+    			let prevPtr[0] = nextPtr[0]; // make previous point to next of next
+    			let currPtr[1] = currPtr[1] + nextPtr[1] + 2;	//update current length
+    		}
+    		else
+    		{
+    			let currPtr = currPtr[0]; // merger not possible for curr segment try another seg
+    		}
+    		let i = i + 1;
+    	}
+    	
+    	//set the tail
+    	let currPtr = freeListHead;
+    	let prevPtr = 0;
+    	while(~(currPtr = 0))
+    	{
+    		let prevPtr = currPtr;
+    		let currPtr = currPtr[0];
+    	}
+    	let freeListTail = prevPtr;
+    	let freeListTail[0] = 0;
+    	return;
+    }       
+       
+}

@@ -1,0 +1,367 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Screen.jack
+
+/**
+ * A library of functions for displaying graphics on the screen.
+ * The Hack physical screen consists of 256 rows (indexed 0..255, top to bottom)
+ * of 512 pixels each (indexed 0..511, left to right). The top left pixel on 
+ * the screen is indexed (0,0).
+ */
+class Screen {
+
+    static boolean color; 
+    static Array power2;
+    static Array bitMask;
+
+    /** Initializes the Screen. */
+    function void init() {
+    	var int i;
+    	let power2 = Array.new(16);
+    	let bitMask = Array.new(16);
+    	let color = true; //default black
+    	
+    	let power2[0] = 1;
+    	let i = 1;
+    	
+    	while(i<16)
+    	{
+    		let power2[i] = power2[i-1] + power2[i-1];
+    		let i = i + 1;
+    	}  
+    	
+    	let bitMask[15] = -1;
+    	let i = 1;
+    	while(i<15)
+    	{
+    		let bitMask[i-1] = power2[i]-1;
+    		let i = i + 1;
+    	}
+    	let bitMask[14] = 32767;	    	
+    	return;
+    }
+
+    /** Erases the entire screen. */
+    function void clearScreen() {
+    	let color = false;
+    	do Screen.drawRectangle(0,0,511,255);
+    	let color = true;
+    	return;
+    }
+
+    /** Sets the current color, to be used for all subsequent drawXXX commands.
+     *  Black is represented by true, white by false. */
+    function void setColor(boolean b) {
+    	let color = b;
+    	return;
+    }
+
+    /** Draws the (x,y) pixel, using the current color. */
+    function void drawPixel(int x, int y) {
+    	var int address, value,bitNo;
+    	
+    	if( (x < 0) | (x > 511) | (y < 0 ) | ( y > 255) )
+    	{
+    		do Sys.error(7); 
+    	}
+    	
+    	let bitNo = x & 15;
+    	let address = 32 * y + (x / 16);
+    	let value = Memory.peek(16384+address);
+    	if(color)
+    	{
+    		if((value & power2[bitNo]) = 0) //if white make it black else leave it black
+    		{
+    			let value = value | power2[bitNo];
+    		}
+    	}
+    	
+    	else
+    	{
+
+    		if(~((value & power2[bitNo]) = 0)) //if black make it white else leave it white
+    		{
+    			let value = value & ~(power2[bitNo]);
+    		}
+    	}
+    	do Memory.poke(16384+address, value);
+    	return;
+    }
+    
+
+    /** Draws a line from pixel (x1,y1) to pixel (x2,y2), using the current color. */
+    function void drawLine(int x1, int y1, int x2, int y2) {
+    	var int a, b, diff,dx,dy,i;
+    	
+    	if( (x1 < 0) | (x1 > 511) | (y1 < 0 ) | ( y1 > 255) | (x2 < 0) | (x2 > 511) | (y2 < 0 ) | ( y2 > 255) )
+    	{
+    		do Sys.error(8); 
+    	}
+    	
+    	let dx = x2 - x1;
+    	let dy = y2 - y1;
+    	let a = 0;
+    	let b = 0;
+    	let diff = 0;
+    	
+    	let i = 0;
+    	if(dx = 0) //vertical Line
+    	{
+    		if ( dy < 0)
+    		{
+    			let i = 0;
+    			while( i < (-dy + 1))
+    			{
+    				do Screen.drawPixel(x1,y2+i);
+    				let i = i + 1;
+    			}
+    		}
+    		
+    		else
+    		{
+    			let i = 0;
+    			while( i < (dy + 1))
+    			{
+    				do Screen.drawPixel(x1,y1+i);
+    				let i = i + 1;
+    			}
+    		}
+    		return;
+    	}
+    	
+    	if(dy = 0) // horizontal line (optimised since it is widely used in draw rectangle, circle)
+    	{
+    		if ( dx < 0)
+    		{
+			
+    			do Screen.drawHorizontalLine(x2,y1,x1);
+    		}
+    		
+    		else //dx > 0
+    		{
+    			do Screen.drawHorizontalLine(x1,y1,x2);	
+    		}
+    		return;
+    	}
+    	
+    	if( (dx > 0) & (dy < 0)) // bottom left to top right
+    	{
+    		while ( (a < (dx + 1)) & (b < (-dy + 1)))
+    		{
+    			do Screen.drawPixel(x1+a,y1+b);
+    			if(diff < 0) //move right or up
+    			{
+    				let a = a + 1;
+    				let diff = diff + -dy;
+    			}
+    			else
+    			{
+    				let b = b - 1;
+    				let diff = diff - dx;
+    			}
+    		}
+    		return;	
+    	}
+    	
+    	
+    	if( (dx > 0) & (dy > 0)) // top left to bottom right
+    	{
+    		while ( (a < (dx + 1)) & (b < (dy + 1)))
+    		{
+    			do Screen.drawPixel(x1+a,y1+b);
+    			if(diff < 0) //move right or down
+    			{
+    				let a = a + 1;
+    				let diff = diff + dy;
+    			}
+    			else
+    			{
+    				let b = b + 1;
+    				let diff = diff - dx;
+    			}
+    		}
+    		return;	
+    	}
+    	
+    	if( (dx < 0) & (dy < 0)) // bottom right to top left
+    	{
+    		while ( (a < (-dx + 1)) & (b < (-dy + 1)))
+    		{
+    			do Screen.drawPixel(x2+a,y2+b);
+    			if(diff < 0) //move right or down
+    			{
+    				let a = a + 1;
+    				let diff = diff + -dy;
+    			}
+    			else
+    			{
+    				let b = b + 1;
+    				let diff = diff - -dx;
+    			}
+    		}
+    		return;	
+    	}
+    	
+    	if( (dx < 0) & (dy > 0)) // top right to bottom left
+    	{
+    		while ( (a < (-dx + 1)) & (b < (dy + 1)))
+    		{
+    			do Screen.drawPixel(x2+a,y2+b);
+    			if(diff < 0) //move right or up
+    			{
+    				let a = a + 1;
+    				let diff = diff + dy;
+    			}
+    			else
+    			{
+    				let b = b - 1;
+    				let diff = diff - -dx;
+    			}
+    		}
+    		return;	
+    	}
+    	return;
+    	
+    }
+    
+    /** draws a horizontal Line from (x1,y1) to (x2,y1) by updating the whole word*/
+    function void drawHorizontalLine(int x1, int y1, int x2)
+    {
+    	var int address, value,bitNo,length,rightMaskIndex,leftMaskIndex,dx,i,rightMask,leftMask,temp;
+    	let dx = x2 - x1;
+	let i = 0;
+    	let bitNo = x1 & 15; //x1 mod 16
+    	let length = dx + 1;
+    	let address = 32 * y1 + (x1 / 16) + 16384;
+	//do Memory.poke(16384,bitNo);
+	
+    	if(bitNo > 0) //update bits of first work
+    	{
+    		if(length < (16-bitNo))
+    		{
+    			
+    	    		let leftMaskIndex = bitNo-1;
+    			let rightMaskIndex = leftMaskIndex + length;
+    			let leftMask = ~bitMask[leftMaskIndex];
+    			let rightMask = bitMask[rightMaskIndex];
+    			let temp = Memory.peek(address);
+    			if(color)
+    			{
+    				do Memory.poke(address,temp | (leftMask & rightMask));
+    			}
+    			else
+    			{
+    				do Memory.poke(address,temp & (~leftMask | ~rightMask));
+    			}	
+    			let length = 0;
+    		}
+    		else
+    		{
+    			
+    			let temp = Memory.peek(address);
+			if(color)
+			{
+				do Memory.poke(address,temp | ~bitMask[bitNo-1]);
+			}
+			else
+			{
+				do Memory.poke(address,temp & bitMask[bitNo-1]);
+			}
+    			let length = length - (16-bitNo);
+    			let address = address + 1; 
+    		}
+    	}
+    			 
+    	while(length > 15) //update all full 16bits
+    	{
+    		let value = Memory.peek(address);
+    		if(color)
+    	        {
+    			//color black
+    			do Memory.poke(address,-1);		
+    		}
+    		else
+    		{
+    			//color white
+    			do Memory.poke(address,0);
+    		}
+    		let length = length - 16;
+    		let address = address + 1;
+    			
+    	}
+    			
+    	if(length > 0) //update left over bits in word
+    	{
+		let temp = Memory.peek(address);
+		if(color)
+		{
+			do Memory.poke(address,temp | bitMask[length-1]);
+		}
+		else
+		{
+			do Memory.poke(address,temp & ~bitMask[length-1]);
+		}
+    	}
+    	return;
+    }
+    
+     /** draws a horizontal Line from (x1,y1) to (x2,y1) by updating the individual bits*/
+    function void drawShortHorizontalLine( int x1, int x2, int y ) {
+       while( x1 < (x2 + 1))
+       {
+       	do Screen.drawPixel(x1,y);
+       	let x1 = x1 + 1;
+       }
+        return;
+    }
+    
+  
+    /** Draws a filled rectangle whose top left corner is (x1, y1)
+     * and bottom right corner is (x2,y2), using the current color. */
+    function void drawRectangle(int x1, int y1, int x2, int y2) {
+    	var int i,dy;
+    	
+    	if( (x1 < 0) | (x1 > 511) | (y1 < 0 ) | ( y1 > 255) | (x2 < 0) | (x2 > 511) | (y2 < 0 ) | ( y2 > 255) | ( x1 > x2) | ( y1 > y2) )
+    	{
+    		do Sys.error(9); 
+    	}
+    	
+    	let dy = y2 - y1;
+    	let i = 0;
+    	
+    	while(i < (dy + 1))
+    	{
+    		do Screen.drawHorizontalLine(x1,y1+i,x2);
+    		let i = i + 1;
+    	}
+    	return;
+    }
+
+    /** Draws a filled circle of radius r<=181 around (x,y), using the current color. */
+    function void drawCircle(int x, int y, int r) {
+    	var int dy,hypotenuse,rSquare,i;
+    	let dy = -r;
+    	let rSquare = r * r;
+    	let i = 0;
+    	
+    	if((x < 0) | (x > 511) | (y < 0 ) | ( y > 255))
+    	{
+    		do Sys.error(12);
+    	}
+    	
+    	if( ( r < 0) | (r > 181))
+    	{
+    		do Sys.error(13);
+    	}
+    	
+    	while(dy < (r + 1))
+    	{
+    		let hypotenuse = Math.sqrt(rSquare-(dy*dy)); 
+    		do Screen.drawHorizontalLine(x-hypotenuse,y+dy, x+hypotenuse);
+    		let dy = dy + 1;
+    	}
+    	return;
+    }
+}
+
