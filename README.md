@@ -147,5 +147,65 @@ prompt> java -jar Compiler_2-1.0.0-jar-with-dependencies.jar Xxx
 
 For every jack file present the in directory (Xxx) it generates a corresponding vm file. (provide the complete path of Xxx)
 
+## Project 12
+  The following classes were implemented as part of OS:
+  - Array.jack
+  - Keyboard.jack
+  - Math.jack
+  - Memory.jack
+  - Output.jack
+  - Screen.jack
+  - String.jack
+  - Sys.jack
 
+ Array.jack
+ - creation of arrays
+ - disposing of arrays were implemented
 
+Keyboard.jack
+ - reading characters
+ - reading line of characters
+ - reading integers
+ - detecting keypress were implemented
+ 
+ Math.jack
+ - Multiplication
+ - Division
+ - Square Root
+ - max
+ - min
+ - abs  were implemented using existing hack ALU operations
+
+ Memory.jack
+ - alloc
+ - dealloc
+ - defragmentation were implemented as part of heap management
+ 
+ Output.jack
+ - printing characters
+ - printing strings
+ - printing integers
+ - newline
+ - backspace
+ - moving and displaying cursor using the designed font.
+
+ Screen.jack
+ - drawing pixel
+ - drawing lines
+ - drawing rectangles
+ - drawing circles 
+ - clear screen were implemented. The Hack computer is a 16 bit. For efficient display methods bit masking techniques were used to manipulate bits.
+
+String.jack
+- creation of strings
+- appending char to strings
+- converting int to string
+- converting string to int were implemented.
+
+Sys.jack
+- Initialization
+- waiting for certain duration
+- displaying error codes
+- halt were implemented.
+
+[Nand2teris website link] (https://www.nand2tetris.org/course)
